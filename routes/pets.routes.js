@@ -20,4 +20,33 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get('/:petId', async (req,res)=>{
+    try{
+        const foundPet = await Pet.findById(req.params.petId)
+        res.json(foundPet)
+    } catch (err) {
+    console.log(err);
+  }
+})
+
+router.put('/:petId',async (req,res)=>{
+    try{
+        const updatedPet = await Pet.findByIdAndUpdate(req.params.petId, req.body, {new:true})
+        res.json(updatedPet)
+
+    }catch(err){
+        console.log(err);
+
+    }
+})
+
+router.delete('/:petId', async(req,res)=>{
+    try{
+        const deletedPet = await Pet.findByIdAndDelete(req.params.petId)
+        res.json(deletedPet)
+    }catch(err){
+        console.log(err);
+    }
+})
+
 module.exports = router;
