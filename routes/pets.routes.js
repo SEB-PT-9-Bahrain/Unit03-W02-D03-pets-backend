@@ -43,6 +43,7 @@ router.put("/:petId", async (req, res) => {
   try {
     const updatedPet = await Pet.findByIdAndUpdate(req.params.petId, req.body, {
       new: true,
+      runValidators: true
     });
     if (!updatedPet) {
       return res.status(404).json({
@@ -51,6 +52,11 @@ router.put("/:petId", async (req, res) => {
     }
     res.json(updatedPet);
   } catch (err) {
+     if (err.name === "ValidationError") {
+      return res.status(400).json({
+        message: err.message,
+      });
+    }
     console.log(err);
   }
 });
