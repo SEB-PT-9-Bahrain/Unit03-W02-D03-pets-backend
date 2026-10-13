@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Pet = require("../models/Pet");
+const mongoose = require('mongoose')
 
 router.post("/", async (req, res) => {
   try {
@@ -25,7 +26,17 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/:petId", async (req, res) => {
+function checkValidObjectId(req,res,next){
+    if(!mongoose.Types.ObjectId.isValid(req.params.petId)){
+        return res.status(400).json({
+        message: "Id not valid",
+      })
+    }else{
+        next()
+    }
+}
+
+router.get("/:petId",checkValidObjectId, async (req, res) => {
   try {
     const foundPet = await Pet.findById(req.params.petId);
     if (!foundPet) {
@@ -39,20 +50,16 @@ router.get("/:petId", async (req, res) => {
   }
 });
 
-router.put("/:petId", async (req, res) => {
+router.put("/:petId",checkValidObjectId, async (req, res) => {
   try {
     const updatedPet = await Pet.findByIdAndUpdate(req.params.petId, req.body, {
       new: true,
-      runValidators: true
+      runValidators:true
     });
-    if (!updatedPet) {
-      return res.status(404).json({
-        message: "Pet Not Found",
-      });
-    }
+   
     res.json(updatedPet);
   } catch (err) {
-     if (err.name === "ValidationError") {
+    if (err.name === "ValidationError") {
       return res.status(400).json({
         message: err.message,
       });
@@ -61,7 +68,7 @@ router.put("/:petId", async (req, res) => {
   }
 });
 
-router.delete("/:petId", async (req, res) => {
+router.delete("/:petId",checkValidObjectId, async (req, res) => {
   try {
     const deletedPet = await Pet.findByIdAndDelete(req.params.petId);
     res.json(deletedPet);

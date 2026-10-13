@@ -7,11 +7,13 @@ const dotenv = require("dotenv").config() //this allows me to use my .env values
 const morgan = require('morgan')
 const connectToDB = require('./db.js')
 const petsRoutes = require('./routes/pets.routes.js')
+const cors = require('cors')
 
 
 // Middleware
 app.use(express.json())
 app.use(morgan('dev'))
+app.use(cors({origin:'http://localhost:5173'}))
 
 
 
