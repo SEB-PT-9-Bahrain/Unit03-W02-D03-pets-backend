@@ -7,6 +7,11 @@ router.post("/", async (req, res) => {
     const createdPet = await Pet.create({ name, age, breed });
     res.status(201).json(createdPet);
   } catch (err) {
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        message: err.message,
+      });
+    }
     console.log(err);
   }
 });
@@ -20,33 +25,43 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get('/:petId', async (req,res)=>{
-    try{
-        const foundPet = await Pet.findById(req.params.petId)
-        res.json(foundPet)
-    } catch (err) {
+router.get("/:petId", async (req, res) => {
+  try {
+    const foundPet = await Pet.findById(req.params.petId);
+    if (!foundPet) {
+      return res.status(404).json({
+        message: "Pet Not Found",
+      });
+    }
+    res.json(foundPet);
+  } catch (err) {
     console.log(err);
   }
-})
+});
 
-router.put('/:petId',async (req,res)=>{
-    try{
-        const updatedPet = await Pet.findByIdAndUpdate(req.params.petId, req.body, {new:true})
-        res.json(updatedPet)
-
-    }catch(err){
-        console.log(err);
-
+router.put("/:petId", async (req, res) => {
+  try {
+    const updatedPet = await Pet.findByIdAndUpdate(req.params.petId, req.body, {
+      new: true,
+    });
+    if (!updatedPet) {
+      return res.status(404).json({
+        message: "Pet Not Found",
+      });
     }
-})
+    res.json(updatedPet);
+  } catch (err) {
+    console.log(err);
+  }
+});
 
-router.delete('/:petId', async(req,res)=>{
-    try{
-        const deletedPet = await Pet.findByIdAndDelete(req.params.petId)
-        res.json(deletedPet)
-    }catch(err){
-        console.log(err);
-    }
-})
+router.delete("/:petId", async (req, res) => {
+  try {
+    const deletedPet = await Pet.findByIdAndDelete(req.params.petId);
+    res.json(deletedPet);
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 module.exports = router;

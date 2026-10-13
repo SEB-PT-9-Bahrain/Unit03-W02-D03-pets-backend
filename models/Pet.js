@@ -9,7 +9,7 @@ const petSchema = new mongoose.Schema({
     age:{
         type: Number,
         required: true,
-        min: 0
+        min: [0, 'Age has to be above 0']
     },
     breed:{
         type:String
